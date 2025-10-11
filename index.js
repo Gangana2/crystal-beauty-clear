@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import studentRouter from './routes/studentRouter.js';
+import itemRouter from './routes/itemRouter.js';
 
 const app = express();
 
@@ -21,6 +22,7 @@ mongoose.connect("mongodb+srv://admin:123@cluster0.ignz4jd.mongodb.net/?retryWri
 app.use(bodyParser.json());  //middleware
 
 app.use('/students', studentRouter); //localhost:5000/students
+app.use('/items', itemRouter); //localhost:5000/items
 
 
 app.listen(5000, () => {
