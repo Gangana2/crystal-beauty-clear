@@ -32,3 +32,21 @@ export function updateItem(req, res) {
 export function deleteItem(req, res) {
     res.json({ message: 'this is delete request from item controller' });
 }
+
+export function goodItems(req,res){
+    res.json({massage: "this is good items from item controller"});
+}
+
+export function searchItems(req,res){
+    const itemName = req.params.name;
+    itemModel.find({
+        name : itemName
+    }).then(
+    (items)=>{
+        res.json(items);
+    }
+).catch(
+    ()=>{
+        res.json({message: "error seearching items"});
+    })
+}
