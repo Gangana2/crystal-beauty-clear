@@ -1,9 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import studentRouter from './routes/studentRouter.js';
-import itemRouter from './routes/itemRouter.js';
 import userRouter from './routes/userRouter.js';
+import productRouter from './routes/productRouter.js';
 import jwt from 'jsonwebtoken';
 
 const app = express();
@@ -25,23 +24,31 @@ app.use(bodyParser.json());  //middleware
 
 // Authorization middleware
 app.use((req, res, next) => {
-    const header = req.headers['authorization'];
+    const header = req.headers['authorization'] || req.headers['Authorization'];
     if (header != null) {
-        const token = header.replace('Bearer ', '');
+        const token = header.replace(/^Bearer\s+/i, '');
         jwt.verify(token, 'randomsecret', (err, decoded) => {
-            console.log(decoded)
-            if (decoded != null){
+            if (err) {
+                console.error('JWT verification failed:', err.message);
+                // don't attach user if token invalid
+            } else if (decoded) {
                 req.user = decoded;
+                console.log('JWT decoded:', decoded);
             }
-        })
-        next();
+            // continue regardless of token validity
+            return next();
+        });
+        return; // jwt.verify callback will call next()
     }
+
+    // No Authorization header: continue without a user
+    return next();
 });
 
         
-app.use('/api/students', studentRouter); //localhost:5000/students
-app.use('/api/items', itemRouter); //localhost:5000/items
+
 app.use('/api/user', userRouter); //localhost:5000/users
+app.use('/api/product', productRouter);
 
 
 app.listen(5000, () => {
