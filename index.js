@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import studentRouter from './routes/studentRouter.js';
 import itemRouter from './routes/itemRouter.js';
 import userRouter from './routes/userRouter.js';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 
@@ -22,8 +23,24 @@ mongoose.connect("mongodb+srv://admin:123@cluster0.ignz4jd.mongodb.net/?retryWri
 
 app.use(bodyParser.json());  //middleware
 
-app.use('/students', studentRouter); //localhost:5000/students
-app.use('/items', itemRouter); //localhost:5000/items
+// Authorization middleware
+app.use((req, res, next) => {
+    const header = req.headers['authorization'];
+    if (header != null) {
+        const token = header.replace('Bearer ', '');
+        jwt.verify(token, 'randomsecret', (err, decoded) => {
+            console.log(decoded)
+            if (decoded != null){
+                req.user = decoded;
+            }
+        })
+        next();
+    }
+});
+
+        
+app.use('/api/students', studentRouter); //localhost:5000/students
+app.use('/api/items', itemRouter); //localhost:5000/items
 app.use('/api/user', userRouter); //localhost:5000/users
 
 

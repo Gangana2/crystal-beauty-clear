@@ -13,6 +13,13 @@ export function getItems(req, res) {
 }
 
 export function saveitems(req, res) {
+    console.log(req.user);
+
+    if(req.user.roll !== 'admin'){
+        res.status(403).json({message: "You can't access add items"});
+        return;
+    }
+
     const item = new itemModel(req.body);
     item.save().then(
         () => {
