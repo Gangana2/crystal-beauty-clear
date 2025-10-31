@@ -4,6 +4,18 @@ import jwt from "jsonwebtoken";
 
 export function saveUser(req, res) {
 
+    // Only allow creating an admin user when the requester is an admin.
+    // If the request is attempting to create a normal user, no admin auth is needed.
+    if (req.body && req.body.role === 'admin') {
+        if (!req.user) {
+            return res.status(403).json({ message: 'Please login as admin before creating an admin' });
+        }
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'You are not authorized to create an admin account' });
+        }
+    }
+
+
     const hashedPassword = bcrypt.hashSync(req.body.password, 10); //password eka hash karanawa
     
     const user = new User({ 
@@ -11,7 +23,10 @@ export function saveUser(req, res) {
         firstName: req.body.firstName, //request body eke firstName eka gannawa
         lastName: req.body.lastName,
         password: hashedPassword, //hash karapu password eka database ekata yawanna
+        role: req.body.role,
     }) //new user object ekak hadanawa model eka use karala
+
+
     user.save().then(  
         () => {
             res.json({ message: 'user data inserted successfully' });

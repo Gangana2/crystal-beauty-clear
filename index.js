@@ -3,7 +3,8 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import userRouter from './routes/userRouter.js';
 import productRouter from './routes/productRouter.js';
-import jwt from 'jsonwebtoken';
+import verifyJWT from './middleware/auth.js';
+import orderRouter from './routes/oderRouter.js';
 
 const app = express();
 
@@ -22,33 +23,25 @@ mongoose.connect("mongodb+srv://admin:123@cluster0.ignz4jd.mongodb.net/?retryWri
 
 app.use(bodyParser.json());  //middleware
 
-// Authorization middleware
-app.use((req, res, next) => {
-    const header = req.headers['authorization'] || req.headers['Authorization'];
-    if (header != null) {
-        const token = header.replace(/^Bearer\s+/i, '');
-        jwt.verify(token, 'randomsecret', (err, decoded) => {
-            if (err) {
-                console.error('JWT verification failed:', err.message);
-                // don't attach user if token invalid
-            } else if (decoded) {
-                req.user = decoded;
-                console.log('JWT decoded:', decoded);
-            }
-            // continue regardless of token validity
-            return next();
-        });
-        return; // jwt.verify callback will call next()
+// Body parser error handler: returns a clear 400 when client sends invalid JSON
+app.use((err, req, res, next) => {
+    // body-parser sends a SyntaxError for invalid JSON
+    if (err && (err instanceof SyntaxError || err.type === 'entity.parse.failed')) {
+        console.error('Invalid JSON received:', err.message);
+        return res.status(400).json({ message: 'Invalid JSON in request body', error: err.message });
     }
-
-    // No Authorization header: continue without a user
-    return next();
+    // pass to next error handler
+    return next(err);
 });
+
+// Authorization middleware
+app.use(verifyJWT);
 
         
 
 app.use('/api/user', userRouter); //localhost:5000/users
 app.use('/api/product', productRouter);
+app.use('/api/order', orderRouter);
 
 
 app.listen(5000, () => {
