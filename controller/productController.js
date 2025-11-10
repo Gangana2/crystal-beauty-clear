@@ -1,16 +1,16 @@
 import Product from '../model/product.js';
 
 export function createProduct(req, res) {
-    if(req.user == null){
+    if(req.user == null){ //check karanawa user login una naththam
         res.status(401).json({ message: 'You need to login first' });
         return;
     }
-    if(req.user.role !== 'admin'){
+    if(req.user.role !== 'admin'){ //check karanawa user admin naththam
         res.status(403).json({ message: 'You are not authorized to create products' });
         return;
     }
 
-    const product = new Product(req.body);
+    const product = new Product(req.body); //new product object ekak hadanawa model eka use karala
     product.save().then(
         () => {
             res.json({ message: 'Product save successfully' });
@@ -45,7 +45,7 @@ export function deleteProduct(req, res) {
     }
 
     Product.findOneAndDelete({ 
-        productId: req.params.productId
+        productId: req.params.productId //postman eke url eke agata id eka dila delete karanawa
      }).then(
             () => {
                 res.json({ message: 'Product deleted successfully' });

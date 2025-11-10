@@ -7,9 +7,9 @@ const productSchema = mongoose.Schema({
     price: {type: Number, required: true},
     labeledPrice: {type: Number, required: true},
     description: {type: String, required: true},
-    images: {type: String, required: true, default: ["https://img.freepik.com/premium-photo/collection-makeup-beauty-products_250469-11096.jpg"]},
+    images: {type: [String], required: true, default: ["https://img.freepik.com/premium-photo/collection-makeup-beauty-products_250469-11096.jpg"]},
     stock: {type: Number, required: true},
 });
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema); //mongodb eke products kiyana collection ekata me schema eka apply karanawa
 export default Product;
