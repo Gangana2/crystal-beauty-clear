@@ -14,7 +14,7 @@ const orderSchema = mongoose.Schema({
             productName: String,
             image: String,
             quantity: Number,
-            price: Number
+            price: Number   //eka line ekaka items tika
          }],
         required: true,
         total: {type: Number, required: true}
@@ -23,5 +23,5 @@ const orderSchema = mongoose.Schema({
 
 })
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.model('Order', orderSchema); //model eka order kiyana collection ekata apply karanawa
 export default Order;

@@ -7,8 +7,8 @@ export async function createOrder(req, res) {
 
   const body = req.body;
 
-  const orderData = {
-    // Model expects `oderId` and `name` (note existing model typos). Populate both
+  const orderData = {  //order data eka object ekakata store karanawa
+    
   
     orderId: "",
     email: body.email || '',
@@ -17,16 +17,17 @@ export async function createOrder(req, res) {
     phoneNumber: body.phoneNumber || '',
     billItems: Array.isArray(body.billItems) ? body.billItems : [],
     total: typeof body.total === 'number' ? body.total : 0,
-  };
+  };  //
 
   try {
-    const lastBill = await Order.findOne().sort({ date: -1 }).limit(1);
+    const lastBill = await Order.findOne().sort({ date: -1 }).limit(1);  //last oder eka gannawa
 
-    // Determine last order id from model field (the model uses `oderId`)
-    if (!lastBill) {
-      orderData.oderId = "ORD0001";
+  
+    if (!lastBill) {   //naththam first order eka create karanawa
+    
       orderData.orderId = "ORD0001";
-    } else {
+
+    } else {  //last order eka thiyenawanam eka wada eka create karanawa
       const lastOrderId = lastBill.oderId || lastBill.orderId || '';
       const lastOrderNumber = (lastOrderId || 'ORD0000').replace(/[^0-9]/g, '');
       const newOrderNumberInt = parseInt(lastOrderNumber || '0', 10) + 1;
@@ -36,8 +37,8 @@ export async function createOrder(req, res) {
       orderData.orderId = newId;
     }
 
-    const order = new Order(orderData);
-    await order.save();
+    const order = new Order(orderData); //new order object ekak hadanawa model eka use karala
+    await order.save(); //database ekata save karanawa
 
     res.json({ message: "Order created successfully"});
   } catch (err) {

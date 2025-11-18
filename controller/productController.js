@@ -1,6 +1,6 @@
 import Product from '../model/product.js';
 
-export function createProduct(req, res) {
+export async function createProduct(req, res) {
     if(req.user == null){ //check karanawa user login una naththam
         res.status(401).json({ message: 'You need to login first' });
         return;
@@ -11,18 +11,14 @@ export function createProduct(req, res) {
     }
 
     const product = new Product(req.body); //new product object ekak hadanawa model eka use karala
-    product.save().then(
-        () => {
-            res.json({ message: 'Product save successfully' });
-        }
-    ).catch(
-        (err) => {
-            res.status(500).json({ message: 'Product not saved' });
-        }
-    );
-}
+    try{
+        await product.save()
+        res.json({ message: 'Product created successfully' });
+    }catch(err){
+        res.status(500).json({ message: 'Error creating product' });
+}}
 
-export function getProduct(req, res) {
+export async function getProduct(req, res) {
     Product.find().then(
         (products) => {
             res.json(products);
